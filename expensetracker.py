@@ -76,7 +76,52 @@ class expense_manager:
         expenses = [expense for expense in expenses if expense["id"] != expense_id]
         self.save(expenses)
 
+    def view_expenses(self):
+        return list(self.expenses)
+    
 
+    def calculate_total(self):
+        return sum(e.amount for e in self.expenses)
+    
+    def get_float(prompt, min_val=0.01):
+        while True:
+            raw = input(prompt).strip()
+            try:
+                value = float(raw)
+                if value < min_val:
+                    print(f"Amount must be at least {min_val}.")
+                    continue
+                return value
+            except ValueError:
+                print("Please enter a number (e.g. 12.50).")
+
+    def get_date(prompt):
+        """Keep asking until user enters a valid YYYY-MM-DD date."""
+        import datetime
+        while True:
+            raw = input(prompt).strip()
+            if not raw:
+                # Empty → use today
+                return datetime.date.today().isoformat()
+            try:
+                datetime.date.fromisoformat(raw)    # validates format
+                return raw
+            except ValueError:
+                print("Use YYYY-MM-DD format (e.g. 2024-03-15).")
+
+    def get_category(prompt, valid):
+        """Only accept categories from a known list."""
+        while True:
+            raw = input(prompt).strip().lower()
+            if raw in valid:
+                return raw
+            print(f"Choose from: {', '.join(valid)}")
+
+    # Usage in add_expense()
+    amount   = get_float("Amount: £")
+    date     = get_date("Date (YYYY-MM-DD or Enter for today): ")
+    category = get_category("Category (food/transport/bills/other): ",
+                            {"food","transport","bills","other"})      
 # display_expenses()
 # delete_expense()
 # create_expense()
